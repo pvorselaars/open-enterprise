@@ -1,0 +1,37 @@
+﻿@page "/"
+@rendermode InteractiveServer
+@inject Facts facts
+@inject IEnumerable<Actor> actors
+
+<PageTitle>Open Enterprise</PageTitle>
+
+<div class="grid">
+        @foreach (var actor in actors){
+        <div>
+            @actor
+            @foreach (var act in actor.GetPossibleActs())
+            {
+                <article>
+                    @if (facts.Assert(act.Proposition)) {
+                        <body style="color: green">@act.Proposition</body>
+                    } else {
+                        <body>@act.Proposition</body>
+                    }
+                    <footer>
+                        <div role="group">
+                            @foreach (var intention in act.Intentions){
+                                <button @onclick="() => actor.Act(act.Proposition, intention)">@intention</button>
+                            }
+                        </div>
+                    </footer>
+                </article>
+            }
+        </div>
+        }
+    <div>
+        @foreach (var fact in facts.Communication)
+        {
+            <article>@fact</article>
+        }
+    </div>
+</div>
