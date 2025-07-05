@@ -4,7 +4,7 @@ Open Enterprise is an experimental .NET interactive web application for modeling
 
 ## Features
 
-- **Ontology-based domain model**: Core concepts like `Actor`, `Role`, `ProductionFact`, `CommunicationFact`, and `Intention` are modeled as C# classes.
+- **Ontology-based domain model**: Core concepts like `Role`, `ProductionFact`, `CommunicationFact`, and `Intention` are automatically generated as C# classes from [Protocol Buffers (Protobuf)](https://protobuf.dev/) definitions.
 - **Blazor interactive UI**: The frontend is built with Blazor, allowing real-time interaction and visualization of enterprise facts and communications.
 - **Dynamic communication acts**: Actors can perform and respond to various communication acts (e.g., Request, Promise, State, Accept, Reject) based on the current state of production and communication facts.
 
@@ -28,7 +28,7 @@ Open Enterprise is an experimental .NET interactive web application for modeling
 
 ## Project Structure
 
-- `Ontology/` — Core domain models (Actor, Role, Facts, etc.)
+- `Ontology/` — Core `.proto` files (Role, Facts, etc.)
 - `UI/` — Blazor components and pages
 - `wwwroot/` — Static assets (CSS, etc.)
 - `Program.cs` — Application entry point and DI setup

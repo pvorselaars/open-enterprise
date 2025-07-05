@@ -1,37 +1,21 @@
 ﻿@page "/"
 @rendermode InteractiveServer
-@inject Facts facts
-@inject IEnumerable<Actor> actors
+@inject HashSet<ProductionFact> production
+@inject HashSet<CommunicationFact> communication
+@inject ProcessModel model
+@inject HashSet<Role> actors
 
 <PageTitle>Open Enterprise</PageTitle>
 
 <div class="grid">
-        @foreach (var actor in actors){
+    @foreach(var actor in actors){
         <div>
-            @actor
-            @foreach (var act in actor.GetPossibleActs())
-            {
-                <article>
-                    @if (facts.Assert(act.Proposition)) {
-                        <body style="color: green">@act.Proposition</body>
-                    } else {
-                        <body>@act.Proposition</body>
-                    }
-                    <footer>
-                        <div role="group">
-                            @foreach (var intention in act.Intentions){
-                                <button @onclick="() => actor.Act(act.Proposition, intention)">@intention</button>
-                            }
-                        </div>
-                    </footer>
-                </article>
+            <article>
+                <header>@actor.Name</header>
+            </article>
+            @foreach(var act in model.GetPossibleActs(actor)) {
+                <Action Act="act" Perfomer="actor"></Action>
             }
         </div>
-        }
-    <div>
-        @foreach (var fact in facts.Communication)
-        {
-            <article>@fact</article>
-        }
-    </div>
+    }
 </div>

@@ -1,0 +1,43 @@
+syntax = "proto3";
+
+package OpenEnterprise.Ontology;
+
+option csharp_namespace = "OpenEnterprise.Ontology";
+
+enum Intention
+{
+    Request = 0;
+    Promise = 1;
+    Decline = 2;
+    Quit    = 3;
+    State   = 4;
+    Reject  = 5;
+    Accept  = 6;
+    Cancel  = 7;
+    Allow   = 8;
+    Refuse  = 9;
+    Stop    = 10;
+}
+
+message Role {
+    string name = 1;
+    repeated Role roles = 2;
+}
+
+message ProductionFact {
+    bytes id = 1;
+}
+
+message CommunicationFact {
+    bytes id = 1;
+    Role performer = 2;
+    Intention intention = 3;
+    Role addressee = 4;
+    ProductionFact proposition = 5;
+    fixed64 time = 6;
+}
+
+message CommunicationActs {
+    ProductionFact proposition = 1;
+    repeated Intention intentions = 2;
+}

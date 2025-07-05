@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Hosting.StaticWebAssets;
 using OpenEnterprise.UI;
 using OpenEnterprise.Ontology;
+using OpenEnterprise.Models;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,12 +16,10 @@ builder.WebHost.ConfigureKestrel(options =>
 
 });
 
-var facts = new Facts();
-var actor1 = new Actor(Guid.Parse("ffffffff-ffff-ffff-ffff-ffffffffffff"), facts);
-var actor2 = new Actor(Guid.Empty, facts);
-
-builder.Services.AddSingleton<IEnumerable<Actor>>([actor1, actor2]);
-builder.Services.AddSingleton(facts);
+builder.Services.AddSingleton<HashSet<Role>>([new("Alice"), new("Bob"), new("John")]);
+builder.Services.AddSingleton<HashSet<ProductionFact>>([]);
+builder.Services.AddSingleton<HashSet<CommunicationFact>>([]);
+builder.Services.AddSingleton<ProcessModel>();
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 

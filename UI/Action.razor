@@ -1,0 +1,38 @@
+@inject ProcessModel model
+@inject HashSet<Role> actors
+
+<article>
+    @if (@Act.Proposition != null){
+        <header>Production Fact: @Act.Proposition.Id.ToBase64()</header>
+    }
+    <body>
+        <form>
+            <select @bind="@addressee.Name">
+                @foreach(var role in actors){
+                    <option>@role.Name</option>
+                }
+            </select>
+            <fieldset role="group">
+                @foreach(var intention in Act.Intentions){
+                    <button @onclick="() => model.Act(Perfomer, intention, addressee, Act.Proposition!)" disabled="@(Validate())">@intention</button>
+                }
+            </fieldset>
+        </form>
+    </body>
+</article>
+
+@code {
+    [Parameter]
+    public required CommunicationActs Act { get; set; }
+
+    [Parameter]
+    public required Role Perfomer { get; set; }
+
+    private Role addressee = new();
+
+    private bool Validate()
+    {
+        return !actors.Where(a => a.Name == addressee.Name).Any();
+    }
+
+}
