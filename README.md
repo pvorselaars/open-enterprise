@@ -12,6 +12,7 @@ Open Enterprise is an experimental .NET interactive web application for modeling
 
 ### Prerequisites
 - [.NET 9 SDK](https://dotnet.microsoft.com/en-us/download/dotnet/9.0)
+- [OIDC-compatible identity provider](https://openid.net/developers/how-connect-works/)
 
 ### Running the Application
 
@@ -19,6 +20,18 @@ Open Enterprise is an experimental .NET interactive web application for modeling
    ```sh
    git clone https://github.com/pvorselaars/open-enterprise.git
    cd open-enterprise
+   ```
+2. Add the following section to `appsettings.json` for your identity provider:
+   ```sh
+   "Authentication": {
+      "OIDC": {
+         "Authority": "https://your-idp",
+         "ClientId": "your-client-id",
+         "ClientSecret": "your-client-secret",
+         "CallbackPath": "/signin",
+         "Scope": [ "openid", "profile", "email" ]
+      }
+
    ```
 2. Run the application:
    ```sh
