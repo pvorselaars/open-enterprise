@@ -29,15 +29,13 @@ message ProductionFact {
 }
 
 message CommunicationFact {
-    bytes id = 1;
-    Role performer = 2;
-    Intention intention = 3;
-    Role addressee = 4;
-    ProductionFact proposition = 5;
-    fixed64 time = 6;
+    CommunicationAct act = 1;
+    fixed64 time = 2;
 }
 
-message CommunicationActs {
-    ProductionFact proposition = 1;
-    repeated Intention intentions = 2;
+message CommunicationAct {
+    Role performer = 1;
+    Intention intention = 2;
+    Role addressee = 3;
+    ProductionFact proposition = 4;
 }

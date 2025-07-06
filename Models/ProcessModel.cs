@@ -4,58 +4,60 @@ namespace OpenEnterprise.Models;
 
 public class ProcessModel(HashSet<ProductionFact> production, HashSet<CommunicationFact> communication)
 {
-    public bool Act(Role performer, Intention intention, Role addressee, ProductionFact proposition)
+    public bool Act(CommunicationAct act)
     {
         // TODO: assert legal transition
 
-        if (proposition == null)
+        if (act.Proposition == null)
         {
-            proposition = new(Guid.NewGuid());
-            production.Add(proposition);
+            act.Proposition = new(Guid.NewGuid());
+            production.Add(act.Proposition);
         }
 
         communication.Add(new CommunicationFact {
-            Performer = performer,
-            Intention = intention,
-            Addressee = addressee,
-            Proposition = proposition,
+            Act  = act,
             Time = (ulong)(DateTime.UtcNow - DateTime.UnixEpoch).TotalSeconds});
 
         return true;
     }
 
-    private void Act(CommunicationFact c) => communication.Add(c);
-    public HashSet<CommunicationActs> GetPossibleActs(Role actor)
+    public List<CommunicationAct> GetPossibleActs(Role actor)
     {
-        var defaultAct = new CommunicationActs(null, [Intention.Request]);
-        return [defaultAct, .. communication.Where(c => actor.Is(c.Addressee) || actor.Is(c.Performer))
-                                            .GroupBy(c => c.Proposition.Id)
+        var defaultAct = new CommunicationAct
+        {
+            Performer = actor,
+            Intention = Intention.Request,
+            Addressee = new(),
+            Proposition = null
+        };
+
+        return [defaultAct, .. communication.Where(c => actor.Is(c.Act.Addressee) || actor.Is(c.Act.Performer))
+                                            .GroupBy(c => c.Act.Proposition.Id)
                                             .Select(g => g.OrderByDescending(c => c.Time)
                                             .First())
-                                            .Select(c => GetPossibleActs(actor, c))];
+                                            .SelectMany(c => GetPossibleActs(actor, c))];
     }
 
-    private CommunicationActs GetPossibleActs(Role a, CommunicationFact c)
+    private List<CommunicationAct> GetPossibleActs(Role a, CommunicationFact c)
     {
-        List<Intention> possibleResponses = [];
+        List<CommunicationAct> possibleResponses = [];
 
-        if (a.Is(c.Performer))
+        if (a.Is(c.Act.Performer) && c.Act.Intention == Intention.Promise)
         {
-            Intention[] responses = c.Intention switch
-            {
-                // Intention.Request => [Intention.Cancel],
-                Intention.Promise => [Intention.State],
-                // Intention.State => [Intention.Cancel],
-                // Intention.Accept => [Intention.Cancel],
-                _ => [],
-            };
 
-            possibleResponses.AddRange(responses);
+            possibleResponses.Add(new CommunicationAct
+            {
+                Performer = a,
+                Addressee = c.Act.Addressee,
+                Proposition = c.Act.Proposition,
+                Intention = Intention.State
+            });
+
         }
 
-        if (a.Is(c.Addressee))
+        if (a.Is(c.Act.Addressee))
         {
-            Intention [] responses = c.Intention switch
+            Intention [] intentions = c.Act.Intention switch
             {
                 Intention.Request => [Intention.Promise, Intention.Decline],
                 // Intention.Cancel => [Intention.Allow, Intention.Refuse],
@@ -64,9 +66,19 @@ public class ProcessModel(HashSet<ProductionFact> production, HashSet<Communicat
                 _ => [],
             };
 
-            possibleResponses.AddRange(responses);
+            foreach (var i in intentions)
+            {
+                possibleResponses.Add(new CommunicationAct
+                {
+                    Performer = a,
+                    Addressee = c.Act.Performer,
+                    Proposition = c.Act.Proposition,
+                    Intention = i
+                });
+            }
+
         }
 
-        return new(c.Proposition, possibleResponses);
+        return possibleResponses;
     }
 }

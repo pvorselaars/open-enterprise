@@ -42,8 +42,8 @@ This project is based on enterprise ontology, a formal approach to modeling the 
 
 ## Roadmap
 
+- [x] User authentication and multi-actor simulation
 - [ ] Full transaction implementation with cancellation patterns
-- [ ] User authentication and multi-actor simulation
 - [ ] Persistent storage
 - [ ] Visualize and edit models
 - [ ] UI generation using state model

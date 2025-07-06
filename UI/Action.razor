@@ -4,35 +4,33 @@
 <article>
     @if (@Act.Proposition != null){
         <header>Production Fact: @Act.Proposition.Id.ToBase64()</header>
+        <body>
+            <form>
+                <button @onclick="() => model.Act(Act)" disabled="@(Validate())">@Act.Intention @Act.Addressee.Name</button>
+            </form>
+        </body>
+    } else {
+        <body>
+            <form>
+                <select @bind="@Act.Addressee.Name" required>
+                    <option disabled value="">Please select an addressee...</option>
+                    @foreach(var role in actors){
+                        <option>@role.Name</option>
+                    }
+                </select>
+                <button @onclick="() => model.Act(Act)" disabled="@(Validate())">@Act.Intention @Act.Addressee.Name</button>
+            </form>
+        </body>
     }
-    <body>
-        <form>
-            <select @bind="@addressee.Name">
-                @foreach(var role in actors){
-                    <option>@role.Name</option>
-                }
-            </select>
-            <fieldset role="group">
-                @foreach(var intention in Act.Intentions){
-                    <button @onclick="() => model.Act(Perfomer, intention, addressee, Act.Proposition!)" disabled="@(Validate())">@intention</button>
-                }
-            </fieldset>
-        </form>
-    </body>
 </article>
 
 @code {
     [Parameter]
-    public required CommunicationActs Act { get; set; }
-
-    [Parameter]
-    public required Role Perfomer { get; set; }
-
-    private Role addressee = new();
+    public required CommunicationAct Act { get; set; }
 
     private bool Validate()
     {
-        return !actors.Where(a => a.Name == addressee.Name).Any();
+        return !actors.Where(a => a.Name == Act.Addressee.Name).Any();
     }
 
 }
